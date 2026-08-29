@@ -52,6 +52,19 @@ a:hover { text-decoration: underline; }
 
 main { max-width: 1080px; margin: -24px auto 0; padding: 0 18px 40px; }
 
+/* ---------- top nav ---------- */
+.topnav {
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 8px;
+  margin: 20px 0 18px;
+}
+.topnav a {
+  font-size: 13px; color: #475569; background: #fff; border: 1px solid var(--line);
+  border-radius: 999px; padding: 6px 16px; transition: color .12s, background .12s, border-color .12s;
+}
+.topnav a:hover {
+  color: var(--accent); border-color: #bfdbfe; background: #eff6ff; text-decoration: none;
+}
+
 /* ---------- stats ---------- */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
 .stat {
@@ -121,6 +134,28 @@ main { max-width: 1080px; margin: -24px auto 0; padding: 0 18px 40px; }
 .b-mid { background: #fef3c7; color: #b45309; }
 .b-exam { background: #e0e7ff; color: #4338ca; }
 .exam-course { flex: 1; font-weight: 600; font-size: 13.5px; }
+
+/* ---------- countdown ---------- */
+.cd { display: block; font-size: 11.5px; margin-top: 2px; }
+.cd-soon { color: var(--accent); font-weight: 600; }
+.cd-today { color: var(--exam); font-weight: 700; }
+.cd-done { color: var(--muted); }
+
+/* ---------- focus progress & checkboxes ---------- */
+.focus-prog {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px; color: #14532d;
+}
+.focus-prog b { font-size: 15px; color: #15803d; }
+.focus-prog button {
+  margin-left: auto; border: 1px solid #bbf7d0; background: #fff; color: #15803d;
+  border-radius: 999px; padding: 3px 12px; font-size: 12px; cursor: pointer;
+}
+.focus-prog button:hover { background: #dcfce7; }
+.ck-row { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
+.ck-row input { margin-top: 3px; accent-color: var(--accent); flex: 0 0 auto; cursor: pointer; }
+.ck-row input:checked + span { color: var(--muted); text-decoration: line-through; }
 
 /* ---------- exam dense ---------- */
 .dense-overview { font-size: 13px; color: #334155; margin-bottom: 16px; }
