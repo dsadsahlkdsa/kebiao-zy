@@ -95,7 +95,7 @@
     items.sort((a, b) => a.ex.date.localeCompare(b.ex.date));
     container.innerHTML = items.map((it) => `
       <div class="exam-item">
-        <div class="exam-date">${fmtDate(it.ex.date)}<small>${wd(it.ex.date)} · 第${it.ex.week}周</small></div>
+        <div class="exam-date">${fmtDate(it.ex.date)}<small>${wd(it.ex.date)} · 第${it.ex.week}周</small>${cdHtml(it.ex.date)}</div>
         ${examBadge(it.ex.kind)}
         <span class="exam-course">${esc(it.course)}</span>
       </div>`).join("");
@@ -104,6 +104,55 @@
 
   function dayGap(a, b) {
     return Math.round((new Date(b + "T00:00:00") - new Date(a + "T00:00:00")) / 86400000);
+  }
+
+  function daysUntil(iso) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.round((new Date(iso + "T00:00:00") - today) / 86400000);
+  }
+
+  function cdHtml(iso) {
+    const n = daysUntil(iso);
+    if (n > 0) return `<span class="cd cd-soon">距今天 ${n} 天</span>`;
+    if (n === 0) return `<span class="cd cd-today">今天考试</span>`;
+    return `<span class="cd cd-done">已结束</span>`;
+  }
+
+  const CHECK_KEY = "kbzy_check_v1";
+  function loadChecks() {
+    try { return JSON.parse(localStorage.getItem(CHECK_KEY) || "{}"); }
+    catch (e) { return {}; }
+  }
+  function saveChecks(s) {
+    try { localStorage.setItem(CHECK_KEY, JSON.stringify(s)); } catch (e) { /* ignore */ }
+  }
+  function checkKey(courseId, section, text) {
+    return courseId + "::" + section + "::" + text;
+  }
+  function bindCheckbox(container) {
+    const checks = loadChecks();
+    container.querySelectorAll("input.ck").forEach((inp) => {
+      inp.checked = !!checks[inp.dataset.key];
+    });
+    container.addEventListener("change", (ev) => {
+      const inp = ev.target;
+      if (!inp.classList || !inp.classList.contains("ck")) return;
+      const s = loadChecks();
+      if (inp.checked) s[inp.dataset.key] = true;
+      else delete s[inp.dataset.key];
+      saveChecks(s);
+      updateFocusProg();
+    });
+  }
+  function updateFocusProg() {
+    const box = document.getElementById("fp-count");
+    if (!box) return;
+    const checks = loadChecks();
+    const cks = document.querySelectorAll("input.ck[data-key]");
+    let done = 0;
+    cks.forEach((inp) => { if (checks[inp.dataset.key]) done++; });
+    box.textContent = `${done} / ${cks.length}`;
   }
 
   function md(iso) {
@@ -154,7 +203,8 @@
           `<li><b>${esc(m.source || "师兄")}：</b>${esc(m.method)}</li>`).join("");
         const focusSummary = ex.focus ? `<p class="bcard-summary">${esc(ex.focus.summary)}</p>` : "";
         const focusEssay = ex.focus
-          ? ex.focus.essay.slice(0, 3).map((e) => `<li>${esc(e)}</li>`).join("")
+          ? ex.focus.essay.slice(0, 3).map((e) =>
+              `<li><label class="ck-row"><input type="checkbox" class="ck" data-key="${esc(checkKey(ex.course, "essay", e))}"><span>${esc(e)}</span></label></li>`).join("")
           : "";
         rows += `
           <div class="bnode">
@@ -163,7 +213,7 @@
               <summary>
                 <span class="bcard-name">${esc(ex.course)}</span>
                 <span class="badge ${ex.kind === "期中" ? "b-mid" : ex.kind === "期末" ? "b-final" : "b-exam"}">${esc(ex.kind)}</span>
-                <span class="bcard-meta">${md(ex.date)}（${wd(ex.date)}）· 第${ex.week}周 · ${ex.credit ? ex.credit + " 学分" : "学分待定"}</span>
+                <span class="bcard-meta">${md(ex.date)}（${wd(ex.date)}）· 第${ex.week}周 · ${ex.credit ? ex.credit + " 学分" : "学分待定"} · ${cdHtml(ex.date)}</span>
               </summary>
               <div class="bcard-detail">
                 <p><b>题型：</b>${esc(ex.format)}</p>
@@ -196,6 +246,7 @@
     });
 
     el.innerHTML = html;
+    bindCheckbox(el);
   }
 
   function selfStudyBar(ratio) {
@@ -242,9 +293,10 @@
       return;
     }
     const essay = f.essay.map((t, idx) =>
-      `<li class="${t.includes("★") ? "star" : ""}">${esc(t)}</li>`).join("");
+      `<li class="${t.includes("★") ? "star" : ""}"><label class="ck-row"><input type="checkbox" class="ck" data-key="${esc(checkKey(course.id, "essay", t))}"><span>${esc(t)}</span></label></li>`).join("");
     const terms = (f.terms || []).map((t) => `<span class="kw">${esc(t)}</span>`).join("");
-    const mcq = (f.mcq || []).map((t) => `<li>${esc(t)}</li>`).join("");
+    const mcq = (f.mcq || []).map((t) =>
+      `<li><label class="ck-row"><input type="checkbox" class="ck" data-key="${esc(checkKey(course.id, "mcq", t))}"><span>${esc(t)}</span></label></li>`).join("");
     const mne = (f.mnemonics || []).map((t) => {
       const idx = t.search(/[：:]/);
       const head = idx >= 0 ? esc(t.slice(0, idx + 1)) : "";
@@ -252,13 +304,32 @@
       return `<div class="mne"><b>${head}</b>${rest}</div>`;
     }).join("");
     const strategy = (f.strategy || []).map((t) => `<li>${esc(t)}</li>`).join("");
+    const total = (f.essay ? f.essay.length : 0) + (f.mcq ? f.mcq.length : 0);
     el.innerHTML = `
+      <div class="focus-prog">
+        <span>复习进度（勾选已掌握的考试重点）</span>
+        <b id="fp-count">0 / ${total}</b>
+        <button type="button" id="fp-reset">重置本课进度</button>
+      </div>
       <div class="focus-summary">${esc(f.summary)}</div>
       ${strategy ? `<div class="focus-sec"><h3>📌 复习策略 <span class="tag">先看这里</span></h3><ul class="focus-list">${strategy}</ul></div>` : ""}
       ${essay ? `<div class="focus-sec"><h3>📝 高频大题 / 简答 <span class="tag">★ 为重中之重</span></h3><ul class="focus-list">${essay}</ul></div>` : ""}
       ${terms ? `<div class="focus-sec"><h3>📖 高频名词解释</h3><div class="kw-wrap">${terms}</div></div>` : ""}
       ${mcq ? `<div class="focus-sec"><h3>✅ 选择题高频考点</h3><ul class="focus-list">${mcq}</ul></div>` : ""}
       ${mne ? `<div class="focus-sec"><h3>🧠 记忆口诀</h3>${mne}</div>` : ""}`;
+    bindCheckbox(el);
+    updateFocusProg();
+    const resetBtn = document.getElementById("fp-reset");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        const s = loadChecks();
+        const prefix = course.id + "::";
+        Object.keys(s).forEach((k) => { if (k.startsWith(prefix)) delete s[k]; });
+        saveChecks(s);
+        el.querySelectorAll("input.ck").forEach((inp) => { inp.checked = false; });
+        updateFocusProg();
+      });
+    }
   }
 
   function renderMethod(course) {
