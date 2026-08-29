@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>享福了-可视化课表 · 2026-2027 学年第 1 学期</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <p class="kicker">可视化课表 · 个人课程导航</p>
+  <h1 id="heroTitle">享福了-可视化课表</h1>
+  <p class="credit">鸣谢：r师兄、阿嗷昂华田师兄等师兄的经验贴</p>
+  <p class="sub" id="heroSub">加载中…</p>
+  <p class="usage">使用说明：点击时间轴上的课程条，即可进入对应科目的详情卡片；点击课程卡片上的「查看详情」也可以进入。</p>
+  <p class="usage">有好的经验或想法，可以私信我，我会汇总后补充到网站里。</p>
+</header>
+
+<main>
+  <section class="stats" id="stats"></section>
+
+  <section class="panel">
+    <h2>课程教学时间轴 <span class="hint">第 1–21 周</span></h2>
+    <div class="timeline" id="timeline"></div>
+    <p class="legend">
+      <b>横条</b>：课程从首次出现到最后一次教学的周范围
+      <span class="lg lg-final"></span><b>期末 / 考试</b>
+      <span class="lg lg-mid"></span><b>期中</b>
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>考试日历 <span class="hint" id="examCount"></span></h2>
+    <div class="exam-list" id="examList"></div>
+  </section>
+
+  <section class="panel">
+    <h2>考试密集周 <span class="hint">提前规划复习节奏</span></h2>
+    <div id="examDense"></div>
+  </section>
+
+  <section class="panel">
+    <h2>课程一览 <span class="hint">每门课详情页将逐步完善</span></h2>
+    <div class="cards" id="courseCards"></div>
+  </section>
+
+  <section class="panel">
+    <h2>备考经验 <span class="hint">来自师兄师姐的经验帖</span></h2>
+    <div class="exp-list" id="expList"></div>
+    <p class="legend">点击链接跳转至微信公众号原文；更多课程的经验帖会陆续补充。</p>
+  </section>
+
+  <section class="panel">
+    <h2>数据说明</h2>
+    <ul class="note">
+      <li>教学跨度、学时构成与自主学习占比根据《2026-2027-1 课表》自动统计；学分与考试日期来自补充资料。</li>
+      <li>“自主学习占比”= 自主学习学时 ÷ 该课程全部教学学时（理论 + 技能 + 见习 + 自主学习，不含考试）。</li>
+      <li>“形势与政策”学分待补充；“二段考”时间待定。</li>
+      <li>学时按课表小节数估算（如 1-0102 计 2 学时，6-060708 计 3 学时）。</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <p class="visits">
+    本站总访问量 <span id="busuanzi_value_site_pv"></span> 次 · 访客数 <span id="busuanzi_value_site_uv"></span> 人
+  </p>
+  <p>课表优化 · 数据来源：2026-2027-1 课表 &amp; 补充资料 · 静态站点，可部署到任意免费托管</p>
+</footer>
+
+<script src="data/courses.js"></script>
+<script src="js/main.js"></script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body>
+</html>
