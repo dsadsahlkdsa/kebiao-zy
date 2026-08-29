@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>课程详情 · 课表优化</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <p class="kicker">课程详情</p>
+  <h1 id="courseTitle">加载中…</h1>
+  <p class="sub" id="courseSub"></p>
+  <a class="back" href="index.html">← 返回课表总览</a>
+</header>
+
+<main>
+  <section class="panel" id="infoPanel">
+    <h2>基本信息</h2>
+    <div class="detail-grid" id="infoGrid"></div>
+  </section>
+
+  <section class="panel" id="focusPanel">
+    <h2>🎯 考试重点 <span class="hint">从备考资料中精炼 · 指导前期学习</span></h2>
+    <div id="focusBody"></div>
+  </section>
+
+  <section class="panel" id="examPanel">
+    <h2>考试安排</h2>
+    <div class="exam-list" id="courseExams"></div>
+  </section>
+
+  <section class="panel" id="timelinePanel">
+    <h2>教学时间轴</h2>
+    <div class="timeline mini-tl" id="courseTimeline"></div>
+    <p class="legend">
+      <span class="lg lg-final"></span><b>期末 / 考试</b>
+      <span class="lg lg-mid"></span><b>期中</b>
+    </p>
+  </section>
+
+  <section class="panel" id="expPanel">
+    <h2>备考经验</h2>
+    <div id="courseExp"></div>
+  </section>
+
+  <section class="panel" id="methodPanel">
+    <h2>师兄推荐的学习方法</h2>
+    <div id="methodBody"></div>
+  </section>
+
+  <section class="panel">
+    <h2>课程资料与笔记 <span class="hint">建设中</span></h2>
+    <div class="placeholder">
+      <div class="big">📝</div>
+      这一块将逐步填充：教学安排明细、重点章节、复习资料、学长学姐经验整理等。<br>
+      每个学科的专属内容会逐个搭建。
+    </div>
+  </section>
+</main>
+
+<footer>
+  课表优化 · 课程详情页 · <a href="index.html">返回总览</a>
+</footer>
+
+<script src="data/courses.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
