@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<header class="hero">
+<header class="hero" id="top">
   <p class="kicker">可视化课表 · 个人课程导航</p>
   <h1 id="heroTitle">享福了-可视化课表</h1>
   <p class="credit">鸣谢：r师兄、阿嗷昂华田师兄等师兄的经验贴</p>
@@ -18,9 +18,17 @@
 </header>
 
 <main>
+  <nav class="topnav">
+    <a href="#top">总览</a>
+    <a href="#sec-exams">考试日历</a>
+    <a href="#sec-dense">考试密集周</a>
+    <a href="#sec-courses">课程一览</a>
+    <a href="#sec-exp">备考经验</a>
+  </nav>
+
   <section class="stats" id="stats"></section>
 
-  <section class="panel">
+  <section class="panel" id="sec-exams">
     <h2>课程教学时间轴 <span class="hint">第 1–21 周</span></h2>
     <div class="timeline" id="timeline"></div>
     <p class="legend">
@@ -30,17 +38,17 @@
     </p>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="sec-dense">
     <h2>考试日历 <span class="hint" id="examCount"></span></h2>
     <div class="exam-list" id="examList"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="sec-courses">
     <h2>考试密集周 <span class="hint">提前规划复习节奏</span></h2>
     <div id="examDense"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="sec-exp">
     <h2>课程一览 <span class="hint">每门课详情页将逐步完善</span></h2>
     <div class="cards" id="courseCards"></div>
   </section>
