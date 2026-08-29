@@ -125,43 +125,65 @@ main { max-width: 1080px; margin: -24px auto 0; padding: 0 18px 40px; }
 /* ---------- exam dense ---------- */
 .dense-overview { font-size: 13px; color: #334155; margin-bottom: 16px; }
 .dense-overview p { margin: 0 0 6px; }
-.dense-warn {
-  background: #fffbeb; border: 1px solid #fde68a; color: #92400e;
-  border-radius: 10px; padding: 8px 12px;
-}
-.dense-warn b { color: #b45309; }
-.dense-seg { margin-bottom: 18px; }
-.dense-seg-head {
+.red-b { color: #dc2626; font-weight: 700; }
+.dense-board { margin-bottom: 24px; }
+.board-head {
   display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
-  border-bottom: 2px solid var(--line); padding-bottom: 8px; margin-bottom: 10px;
+  border-bottom: 2px solid var(--line); padding-bottom: 8px; margin-bottom: 14px;
 }
-.dense-seg-title { font-size: 15px; font-weight: 700; color: var(--accent-dark); }
-.dense-seg-range { font-size: 12.5px; color: var(--muted); }
-.dense-seg-note { font-size: 12px; color: var(--muted); background: #eef2f7; border-radius: 999px; padding: 2px 10px; }
-.dense-card {
-  border: 1px solid var(--line); border-radius: 12px; margin-bottom: 8px;
-  background: #fbfcfe; overflow: hidden;
+.board-title { font-size: 15px; font-weight: 700; color: var(--accent-dark); }
+.board-range { font-size: 12.5px; color: var(--muted); }
+.board-note {
+  font-size: 12px; color: var(--muted); background: #eef2f7;
+  border-radius: 999px; padding: 2px 10px;
 }
-.dense-card summary {
+.board-body { position: relative; padding-left: 0; }
+.board-body::before {
+  content: ""; position: absolute; left: 6px; top: 10px; bottom: 10px;
+  width: 2px; background: #dbe3ee;
+}
+.bnode { display: flex; gap: 14px; align-items: flex-start; position: relative; }
+.bnode-dot {
+  flex: 0 0 14px; width: 14px; height: 14px; margin-top: 15px;
+  border-radius: 50%; background: #fff; border: 3px solid var(--accent); z-index: 1;
+}
+.bnode-dot.mid { border-color: var(--midterm); }
+.bnode-dot.final { border-color: var(--exam); }
+.bnode-dot.exam { border-color: var(--accent); }
+.bcard {
+  border: 1px solid var(--line); border-radius: 12px; background: #fbfcfe;
+  flex: 1; margin-bottom: 4px; overflow: hidden;
+}
+.bcard summary {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  padding: 11px 14px; cursor: pointer; list-style: none;
+  padding: 10px 14px; cursor: pointer; list-style: none;
 }
-.dense-card summary::-webkit-details-marker { display: none; }
-.dense-card summary::before { content: "▸"; color: var(--accent); font-weight: 700; }
-.dense-card[open] summary::before { content: "▾"; }
-.dense-course { font-weight: 700; font-size: 14px; }
-.dense-date, .dense-credit, .dense-gap { font-size: 12px; color: var(--muted); }
-.dense-gap { color: #b45309; background: #fef3c7; border-radius: 999px; padding: 1px 8px; font-weight: 600; }
-.dense-detail {
-  border-top: 1px dashed var(--line); padding: 12px 16px; font-size: 13px; color: #334155;
+.bcard summary::-webkit-details-marker { display: none; }
+.bcard summary::before { content: "▸"; color: var(--accent); font-weight: 700; }
+.bcard[open] summary::before { content: "▾"; }
+.bcard-name { font-weight: 700; font-size: 13.5px; }
+.bcard-meta { font-size: 12px; color: var(--muted); }
+.bcard-detail {
+  border-top: 1px dashed var(--line); padding: 11px 14px; font-size: 12.5px; color: #334155;
 }
-.dense-detail p { margin: 0 0 6px; }
-.dense-detail ul { margin: 0 0 10px; padding-left: 20px; }
-.dense-detail li { margin-bottom: 4px; }
-.dense-focus-summary {
-  background: #eff6ff; border-radius: 8px; padding: 8px 12px; color: #1e3a8a;
+.bcard-detail p { margin: 0 0 6px; }
+.bcard-detail ul { margin: 0 0 9px; padding-left: 18px; }
+.bcard-detail li { margin-bottom: 4px; }
+.bcard-summary {
+  background: #eff6ff; border-radius: 8px; padding: 7px 11px; color: #1e3a8a;
 }
 .dense-todo { color: #b45309; }
+.binterval {
+  display: flex; align-items: center; gap: 8px;
+  margin: 2px 0 4px 12px; padding-left: 6px;
+  font-size: 12.5px; color: var(--muted);
+}
+.binterval .bi-line {
+  display: inline-block; width: 18px; height: 0;
+  border-top: 1.5px dashed #cbd5e1;
+}
+.binterval.short .bi-line { border-color: #f87171; }
+.binterval.short .bi-text { color: #dc2626; font-weight: 700; }
 
 /* ---------- course cards ---------- */
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px; }
