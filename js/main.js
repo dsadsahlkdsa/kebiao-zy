@@ -106,7 +106,12 @@
     return Math.round((new Date(b + "T00:00:00") - new Date(a + "T00:00:00")) / 86400000);
   }
 
-  // 考试密集周：基于本学期实际考试安排（第 8-12 周、第 13-18 周为最密集的两段）
+  function md(iso) {
+    const d = new Date(iso + "T00:00:00");
+    return `${d.getMonth() + 1}/${d.getDate()}`;
+  }
+
+  // 考试密集周：看板式时间轴，期中/期末各用一条独立时间轴，间隔 <=4 天红色加粗
   function renderExamDense() {
     const el = document.getElementById("examDense");
     if (!el) return;
@@ -124,69 +129,69 @@
         focus: c.focus,
       });
     }));
-    all.sort((a, b) => a.date.localeCompare(b.date));
-
-    const prevDate = {};
-    all.forEach((ex, i) => {
-      prevDate[ex.date] = i === 0 ? null : all[i - 1].date;
-    });
 
     const segs = [
-      {
-        title: "期中密集段",
-        range: "第 8–12 周 · 10/19 – 11/16",
-        note: "5 场考试 · 连续 5 周每周一场",
-        lo: 8, hi: 12,
-      },
-      {
-        title: "期末密集段",
-        range: "第 13–18 周 · 11/23 – 12/28",
-        note: "6 场考试 · 连续 6 周每周一场",
-        lo: 13, hi: 18,
-      },
+      { title: "期中考试轴", range: "第 7–12 周 · 10/15 – 11/16", lo: 7, hi: 12 },
+      { title: "期末考试轴", range: "第 13–20 周 · 11/23 – 1/12", lo: 13, hi: 20 },
     ];
+
+    const dotClass = (kind) =>
+      kind === "期中" ? "mid" : kind === "期末" ? "final" : "exam";
 
     let html = `
       <div class="dense-overview">
-        <p>本学期共 ${all.length} 场考试，第 7 周至第 20 周几乎每周一场。最需要提前规划的密集段如下：</p>
-        <p class="dense-warn">⚠️ 两处“背靠背”只隔 <b>4 天</b>：临床技能学（10/15）→ 皮肤性病学（10/19）；妇产科学期末（1/8）→ 儿科学期末（1/12）。</p>
+        <p>本学期共 ${all.length} 场考试，第 7–20 周几乎每周一场。下面用两条时间轴展示最密集的两段，<b>间隔 ≤ 4 天</b>的连考会用 <b class="red-b">红色加粗</b>标出；点开每个考试节点可查看题型、复习方法与考试重点。</p>
       </div>`;
 
     segs.forEach((seg) => {
-      const items = all.filter((ex) => ex.week >= seg.lo && ex.week <= seg.hi);
+      const items = all
+        .filter((ex) => ex.week >= seg.lo && ex.week <= seg.hi)
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      let rows = "";
+      items.forEach((ex, i) => {
+        const method = (ex.method || []).map((m) =>
+          `<li><b>${esc(m.source || "师兄")}：</b>${esc(m.method)}</li>`).join("");
+        const focusSummary = ex.focus ? `<p class="bcard-summary">${esc(ex.focus.summary)}</p>` : "";
+        const focusEssay = ex.focus
+          ? ex.focus.essay.slice(0, 3).map((e) => `<li>${esc(e)}</li>`).join("")
+          : "";
+        rows += `
+          <div class="bnode">
+            <span class="bnode-dot ${dotClass(ex.kind)}"></span>
+            <details class="bcard">
+              <summary>
+                <span class="bcard-name">${esc(ex.course)}</span>
+                <span class="badge ${ex.kind === "期中" ? "b-mid" : ex.kind === "期末" ? "b-final" : "b-exam"}">${esc(ex.kind)}</span>
+                <span class="bcard-meta">${md(ex.date)}（${wd(ex.date)}）· 第${ex.week}周 · ${ex.credit ? ex.credit + " 学分" : "学分待定"}</span>
+              </summary>
+              <div class="bcard-detail">
+                <p><b>题型：</b>${esc(ex.format)}</p>
+                ${focusSummary}
+                <p><b>师兄推荐复习方法：</b></p>
+                ${method ? `<ul>${method}</ul>` : `<p class="dense-todo">待补充</p>`}
+                ${focusEssay ? `<p><b>考试重点（高频大题 TOP3）：</b></p><ul class="dense-focus">${focusEssay}</ul>` : `<p><b>考试重点：</b><span class="dense-todo">待补充</span></p>`}
+              </div>
+            </details>
+          </div>`;
+        if (i < items.length - 1) {
+          const gap = dayGap(items[i].date, items[i + 1].date);
+          rows += `
+            <div class="binterval ${gap <= 4 ? "short" : ""}">
+              <span class="bi-line"></span>
+              <span class="bi-text">间隔 ${gap} 天</span>
+            </div>`;
+        }
+      });
+
       html += `
-        <div class="dense-seg">
-          <div class="dense-seg-head">
-            <span class="dense-seg-title">${seg.title}</span>
-            <span class="dense-seg-range">${seg.range}</span>
-            <span class="dense-seg-note">${seg.note}</span>
+        <div class="dense-board">
+          <div class="board-head">
+            <span class="board-title">${seg.title}</span>
+            <span class="board-range">${seg.range}</span>
+            <span class="board-note">${items.length} 场考试</span>
           </div>
-          ${items.map((ex) => {
-            const gap = prevDate[ex.date] ? `距上一场 ${dayGap(prevDate[ex.date], ex.date)} 天` : "";
-            const method = (ex.method || []).map((m) =>
-              `<li><b>${esc(m.source || "师兄")}：</b>${esc(m.method)}</li>`).join("");
-            const focusSummary = ex.focus ? `<p class="dense-focus-summary">${esc(ex.focus.summary)}</p>` : "";
-            const focusEssay = ex.focus
-              ? ex.focus.essay.slice(0, 3).map((e) => `<li>${esc(e)}</li>`).join("")
-              : "";
-            return `
-              <details class="dense-card">
-                <summary>
-                  <span class="dense-course">${esc(ex.course)}</span>
-                  <span class="badge ${ex.kind === "期中" ? "b-mid" : ex.kind === "期末" ? "b-final" : "b-exam"}">${esc(ex.kind)}</span>
-                  <span class="dense-date">${fmtDate(ex.date)}（${wd(ex.date)}）第 ${ex.week} 周</span>
-                  <span class="dense-credit">${ex.credit ? ex.credit + " 学分" : "学分待定"}</span>
-                  ${gap ? `<span class="dense-gap">${gap}</span>` : ""}
-                </summary>
-                <div class="dense-detail">
-                  <p><b>题型：</b>${esc(ex.format)}</p>
-                  ${focusSummary}
-                  <p><b>师兄推荐复习方法：</b></p>
-                  ${method ? `<ul>${method}</ul>` : `<p class="dense-todo">待补充</p>`}
-                  ${focusEssay ? `<p><b>考试重点（高频大题 TOP3）：</b></p><ul class="dense-focus">${focusEssay}</ul>` : `<p><b>考试重点：</b><span class="dense-todo">待补充</span></p>`}
-                </div>
-              </details>`;
-          }).join("")}
+          <div class="board-body">${rows}</div>
         </div>`;
     });
 
