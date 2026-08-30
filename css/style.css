@@ -158,24 +158,39 @@ main { max-width: 1080px; margin: -24px auto 0; padding: 0 18px 40px; }
 .ck-row input:checked + span { color: var(--muted); text-decoration: line-through; }
 
 /* ---------- course note ---------- */
-#courseNote {
-  width: 100%; min-height: 150px; resize: vertical;
-  border: 1px solid var(--line); border-radius: 12px;
-  padding: 12px 14px; font: inherit; font-size: 14px; line-height: 1.7;
-  color: var(--ink); background: #fffdf7; outline: none;
+#notePanel {
+  border-color: #dde5f2;
+  background: linear-gradient(180deg, #fbfcff 0%, #ffffff 100%);
 }
-#courseNote:focus { border-color: #bfdbfe; box-shadow: 0 0 0 3px rgba(37, 99, 235, .08); }
-.note-bar { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+#notePanel h2 { display: flex; align-items: baseline; gap: 8px; }
+.note-wrap {
+  border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+  background: #fff; box-shadow: 0 1px 2px rgba(15, 23, 42, .03);
+}
+#courseNote {
+  display: block; width: 100%; min-height: 160px; resize: vertical;
+  border: none; outline: none; padding: 14px 16px;
+  font: inherit; font-size: 14px; line-height: 1.8;
+  color: var(--ink); background: #fdfdfe;
+}
+#courseNote::placeholder { color: #a3adbc; }
+#courseNote:focus { background: #ffffff; }
+.note-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  border-top: 1px solid var(--line); padding: 10px 12px; background: #f8f9fb;
+}
 .note-bar button {
-  border: none; background: var(--accent); color: #fff; border-radius: 999px;
-  padding: 7px 18px; font-size: 13px; cursor: pointer;
+  border: none; border-radius: 8px; padding: 7px 16px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  background: var(--accent); color: #fff;
 }
 .note-bar button:hover { background: var(--accent-dark); }
 .note-bar button.ghost {
-  background: #fff; color: #64748b; border: 1px solid var(--line);
+  background: #fff; color: #64748b; border: 1px solid var(--line); font-weight: 500;
 }
 .note-bar button.ghost:hover { background: #f1f5f9; }
 #noteStatus { font-size: 12px; color: var(--muted); margin-left: auto; }
+#noteStatus.saved { color: #059669; font-weight: 600; }
 
 /* ---------- exam dense ---------- */
 .dense-overview { font-size: 13px; color: #334155; margin-bottom: 16px; }
