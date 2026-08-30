@@ -176,11 +176,15 @@
       saveNotes(n);
       if (status) {
         const t = new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
-        status.textContent = msg || `已保存于 ${t}`;
+        status.textContent = msg || `✓ 已保存 ${t}`;
+        status.className = "saved";
       }
     };
     ta.addEventListener("input", () => {
-      if (status) status.textContent = "输入中…（自动保存）";
+      if (status) {
+        status.textContent = "输入中…";
+        status.className = "";
+      }
       clearTimeout(timer);
       timer = setTimeout(() => persist(), 600);
     });
@@ -194,7 +198,10 @@
           const n = loadNotes();
           delete n[course.id];
           saveNotes(n);
-          if (status) status.textContent = "已清空";
+          if (status) {
+            status.textContent = "已清空";
+            status.className = "";
+          }
         }
       });
     }
