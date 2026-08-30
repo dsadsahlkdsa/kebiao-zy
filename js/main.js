@@ -127,6 +127,14 @@
   function saveChecks(s) {
     try { localStorage.setItem(CHECK_KEY, JSON.stringify(s)); } catch (e) { /* ignore */ }
   }
+  const NOTE_KEY = "kbzy_notes_v1";
+  function loadNotes() {
+    try { return JSON.parse(localStorage.getItem(NOTE_KEY) || "{}"); }
+    catch (e) { return {}; }
+  }
+  function saveNotes(n) {
+    try { localStorage.setItem(NOTE_KEY, JSON.stringify(n)); } catch (e) { /* ignore */ }
+  }
   function checkKey(courseId, section, text) {
     return courseId + "::" + section + "::" + text;
   }
@@ -153,6 +161,43 @@
     let done = 0;
     cks.forEach((inp) => { if (checks[inp.dataset.key]) done++; });
     box.textContent = `${done} / ${cks.length}`;
+  }
+
+  function initNote(course) {
+    const ta = document.getElementById("courseNote");
+    if (!ta) return;
+    const status = document.getElementById("noteStatus");
+    ta.value = loadNotes()[course.id] || "";
+    let timer = null;
+    const persist = (msg) => {
+      const n = loadNotes();
+      if (ta.value.trim()) n[course.id] = ta.value;
+      else delete n[course.id];
+      saveNotes(n);
+      if (status) {
+        const t = new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
+        status.textContent = msg || `已保存于 ${t}`;
+      }
+    };
+    ta.addEventListener("input", () => {
+      if (status) status.textContent = "输入中…（自动保存）";
+      clearTimeout(timer);
+      timer = setTimeout(() => persist(), 600);
+    });
+    const saveBtn = document.getElementById("noteSave");
+    if (saveBtn) saveBtn.addEventListener("click", () => persist());
+    const clearBtn = document.getElementById("noteClear");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        if (!ta.value.trim() || window.confirm("确定清空这门课的笔记吗？")) {
+          ta.value = "";
+          const n = loadNotes();
+          delete n[course.id];
+          saveNotes(n);
+          if (status) status.textContent = "已清空";
+        }
+      });
+    }
   }
 
   function md(iso) {
@@ -438,6 +483,7 @@
 
     renderFocus(course);
     renderMethod(course);
+    initNote(course);
 
     document.getElementById("courseExp").innerHTML = course.experience
       ? `<div class="exp-item" style="max-width:560px">
