@@ -157,6 +157,26 @@ main { max-width: 1080px; margin: -24px auto 0; padding: 0 18px 40px; }
 .ck-row input { margin-top: 3px; accent-color: var(--accent); flex: 0 0 auto; cursor: pointer; }
 .ck-row input:checked + span { color: var(--muted); text-decoration: line-through; }
 
+/* ---------- course note ---------- */
+#courseNote {
+  width: 100%; min-height: 150px; resize: vertical;
+  border: 1px solid var(--line); border-radius: 12px;
+  padding: 12px 14px; font: inherit; font-size: 14px; line-height: 1.7;
+  color: var(--ink); background: #fffdf7; outline: none;
+}
+#courseNote:focus { border-color: #bfdbfe; box-shadow: 0 0 0 3px rgba(37, 99, 235, .08); }
+.note-bar { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.note-bar button {
+  border: none; background: var(--accent); color: #fff; border-radius: 999px;
+  padding: 7px 18px; font-size: 13px; cursor: pointer;
+}
+.note-bar button:hover { background: var(--accent-dark); }
+.note-bar button.ghost {
+  background: #fff; color: #64748b; border: 1px solid var(--line);
+}
+.note-bar button.ghost:hover { background: #f1f5f9; }
+#noteStatus { font-size: 12px; color: var(--muted); margin-left: auto; }
+
 /* ---------- exam dense ---------- */
 .dense-overview { font-size: 13px; color: #334155; margin-bottom: 16px; }
 .dense-overview p { margin: 0 0 6px; }
