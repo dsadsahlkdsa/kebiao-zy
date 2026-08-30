@@ -22,12 +22,14 @@
   </section>
 
   <section class="panel" id="notePanel">
-    <h2>我的笔记 <span class="hint">输入后自动保存到本浏览器</span></h2>
-    <textarea id="courseNote" placeholder="在这里写下这门课的笔记、复习心得、易错点……"></textarea>
-    <div class="note-bar">
-      <button type="button" id="noteSave">保存笔记</button>
-      <button type="button" id="noteClear" class="ghost">清空</button>
-      <span id="noteStatus"></span>
+    <h2>我的笔记 <span class="hint">仅保存在当前浏览器 · 自动保存</span></h2>
+    <div class="note-wrap">
+      <textarea id="courseNote" placeholder="写下这门课的笔记、复习心得、易错点……"></textarea>
+      <div class="note-bar">
+        <button type="button" id="noteSave">保存笔记</button>
+        <button type="button" id="noteClear" class="ghost">清空</button>
+        <span id="noteStatus"></span>
+      </div>
     </div>
   </section>
 
