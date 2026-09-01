@@ -133,7 +133,9 @@ main { max-width: 1080px; margin: -24px auto 0; padding: 0 18px 40px; }
 .b-final { background: #fee2e2; color: #b91c1c; }
 .b-mid { background: #fef3c7; color: #b45309; }
 .b-exam { background: #e0e7ff; color: #4338ca; }
+.b-cet6 { background: #f3e8ff; color: #7e22ce; font-weight: 700; }
 .exam-course { flex: 1; font-weight: 600; font-size: 13.5px; }
+.exam-item.cet6 { border-color: #d8b4fe; background: #faf5ff; }
 
 /* ---------- countdown ---------- */
 .cd { display: block; font-size: 11.5px; margin-top: 2px; }
@@ -220,9 +222,13 @@ main { max-width: 1080px; margin: -24px auto 0; padding: 0 18px 40px; }
 .bnode-dot.mid { border-color: var(--midterm); }
 .bnode-dot.final { border-color: var(--exam); }
 .bnode-dot.exam { border-color: var(--accent); }
+.bnode-dot.cet6 { border-color: #9333ea; }
 .bcard {
   border: 1px solid var(--line); border-radius: 12px; background: #fbfcfe;
   flex: 1; margin-bottom: 4px; overflow: hidden;
+}
+.bcard.cet6 {
+  border-color: #d8b4fe; background: #faf5ff; border-left: 3px solid #9333ea;
 }
 .bcard summary {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
@@ -231,6 +237,8 @@ main { max-width: 1080px; margin: -24px auto 0; padding: 0 18px 40px; }
 .bcard summary::-webkit-details-marker { display: none; }
 .bcard summary::before { content: "▸"; color: var(--accent); font-weight: 700; }
 .bcard[open] summary::before { content: "▾"; }
+.bcard.cet6 summary::before { content: "★"; color: #9333ea; }
+.bcard.cet6[open] summary::before { content: "★"; }
 .bcard-name { font-weight: 700; font-size: 13.5px; }
 .bcard-meta { font-size: 12px; color: var(--muted); }
 .bcard-detail {
