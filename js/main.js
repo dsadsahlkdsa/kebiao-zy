@@ -37,9 +37,19 @@
   }
 
   function examBadge(kind) {
-    const cls = kind === "期中" ? "b-mid" : kind === "期末" ? "b-final" : "b-exam";
+    const cls = kind === "期中" ? "b-mid" : kind === "期末" ? "b-final" : kind === "六级" ? "b-cet6" : "b-exam";
     return `<span class="badge ${cls}">${esc(kind)}</span>`;
   }
+
+  const CET6 = {
+    course: "英语六级（CET-6）",
+    kind: "六级",
+    date: "2026-12-12",
+    week: 15,
+    credit: null,
+    format: "全国大学英语六级笔试：写作 · 听力 · 阅读 · 翻译",
+    special: true,
+  };
 
   function weekGrid(total, trackSel) {
     let html = "";
@@ -92,9 +102,10 @@
   function renderExamList(container, courses) {
     const items = [];
     courses.forEach((c) => (c.exams || []).forEach((ex) => items.push({ course: c.name, ex })));
+    items.push({ course: CET6.course, ex: { kind: CET6.kind, date: CET6.date, week: CET6.week } });
     items.sort((a, b) => a.ex.date.localeCompare(b.ex.date));
     container.innerHTML = items.map((it) => `
-      <div class="exam-item">
+      <div class="exam-item ${it.ex.kind === "六级" ? "cet6" : ""}">
         <div class="exam-date">${fmtDate(it.ex.date)}<small>${wd(it.ex.date)} · 第${it.ex.week}周</small>${cdHtml(it.ex.date)}</div>
         ${examBadge(it.ex.kind)}
         <span class="exam-course">${esc(it.course)}</span>
@@ -168,6 +179,16 @@
     if (!ta) return;
     const status = document.getElementById("noteStatus");
     ta.value = loadNotes()[course.id] || "";
+    let storageOk = true;
+    try {
+      localStorage.setItem("kbzy_probe", "1");
+      localStorage.removeItem("kbzy_probe");
+    } catch (e) {
+      storageOk = false;
+    }
+    if (!storageOk && status) {
+      status.textContent = "⚠️ 当前浏览器无法长期保存笔记（隐私模式或无痕模式）";
+    }
     let timer = null;
     const persist = (msg) => {
       const n = loadNotes();
@@ -205,6 +226,53 @@
         }
       });
     }
+    const exportBtn = document.getElementById("noteExport");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", () => {
+        const all = loadNotes();
+        const blob = new Blob([JSON.stringify({ app: "kebiao-zy-notes", version: 1, notes: all }, null, 2)],
+          { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "课表优化-笔记备份.json";
+        a.click();
+        URL.revokeObjectURL(a.href);
+        if (status) {
+          status.textContent = "已导出备份文件";
+          status.className = "saved";
+        }
+      });
+    }
+    const importFile = document.getElementById("noteImportFile");
+    const importBtn = document.getElementById("noteImport");
+    if (importBtn && importFile) {
+      importBtn.addEventListener("click", () => importFile.click());
+      importFile.addEventListener("change", () => {
+        const file = importFile.files && importFile.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(String(reader.result));
+            const notes = parsed && parsed.notes ? parsed.notes : parsed;
+            const merged = Object.assign(loadNotes(), notes || {});
+            saveNotes(merged);
+            ta.value = merged[course.id] || "";
+            if (status) {
+              status.textContent = "已导入备份";
+              status.className = "saved";
+            }
+          } catch (e) {
+            if (status) {
+              status.textContent = "备份文件格式不正确";
+              status.className = "";
+            }
+          }
+        };
+        reader.readAsText(file);
+        importFile.value = "";
+      });
+    }
   }
 
   function md(iso) {
@@ -230,6 +298,18 @@
         focus: c.focus,
       });
     }));
+    const courseExamCount = all.length;
+    all.push({
+      course: CET6.course,
+      credit: null,
+      format: CET6.format,
+      kind: CET6.kind,
+      date: CET6.date,
+      week: CET6.week,
+      method: [],
+      focus: null,
+      special: true,
+    });
 
     const segs = [
       { title: "期中考试轴", range: "第 7–12 周 · 10/15 – 11/16", lo: 7, hi: 12 },
@@ -237,11 +317,11 @@
     ];
 
     const dotClass = (kind) =>
-      kind === "期中" ? "mid" : kind === "期末" ? "final" : "exam";
+      kind === "期中" ? "mid" : kind === "期末" ? "final" : kind === "六级" ? "cet6" : "exam";
 
     let html = `
       <div class="dense-overview">
-        <p>本学期共 ${all.length} 场考试，第 7–20 周几乎每周一场。下面用两条时间轴展示最密集的两段，<b>间隔 ≤ 4 天</b>的连考会用 <b class="red-b">红色加粗</b>标出；点开每个考试节点可查看题型、复习方法与考试重点。</p>
+        <p>本学期课程考试共 ${courseExamCount} 场，另有 <b>12/12 英语六级</b>（已用紫色标出强调）。第 7–20 周几乎每周一场，下面用两条时间轴展示最密集的两段，<b>间隔 ≤ 4 天</b>的连考会用 <b class="red-b">红色加粗</b>标出；点开每个考试节点可查看题型、复习方法与考试重点。</p>
       </div>`;
 
     segs.forEach((seg) => {
@@ -251,28 +331,34 @@
 
       let rows = "";
       items.forEach((ex, i) => {
-        const method = (ex.method || []).map((m) =>
-          `<li><b>${esc(m.source || "师兄")}：</b>${esc(m.method)}</li>`).join("");
+        const method = ex.special
+          ? `<li><b>备考：</b>非课程考试，按六级要求自行备考（写作、听力、阅读、翻译）</li>`
+          : (ex.method || []).map((m) =>
+              `<li><b>${esc(m.source || "师兄")}：</b>${esc(m.method)}</li>`).join("");
         const focusSummary = ex.focus ? `<p class="bcard-summary">${esc(ex.focus.summary)}</p>` : "";
         const focusEssay = ex.focus
           ? ex.focus.essay.slice(0, 3).map((e) =>
               `<li><label class="ck-row"><input type="checkbox" class="ck" data-key="${esc(checkKey(ex.course, "essay", e))}"><span>${esc(e)}</span></label></li>`).join("")
           : "";
+        const creditText = ex.special ? "非课程考试" : (ex.credit ? ex.credit + " 学分" : "学分待定");
+        const badgeCls = ex.kind === "期中" ? "b-mid" : ex.kind === "期末" ? "b-final" : ex.kind === "六级" ? "b-cet6" : "b-exam";
         rows += `
           <div class="bnode">
             <span class="bnode-dot ${dotClass(ex.kind)}"></span>
-            <details class="bcard">
+            <details class="bcard ${ex.special ? "cet6" : ""}">
               <summary>
                 <span class="bcard-name">${esc(ex.course)}</span>
-                <span class="badge ${ex.kind === "期中" ? "b-mid" : ex.kind === "期末" ? "b-final" : "b-exam"}">${esc(ex.kind)}</span>
-                <span class="bcard-meta">${md(ex.date)}（${wd(ex.date)}）· 第${ex.week}周 · ${ex.credit ? ex.credit + " 学分" : "学分待定"} · ${cdHtml(ex.date)}</span>
+                <span class="badge ${badgeCls}">${esc(ex.kind)}</span>
+                <span class="bcard-meta">${md(ex.date)}（${wd(ex.date)}）· 第${ex.week}周 · ${creditText} · ${cdHtml(ex.date)}</span>
               </summary>
               <div class="bcard-detail">
                 <p><b>题型：</b>${esc(ex.format)}</p>
                 ${focusSummary}
-                <p><b>师兄推荐复习方法：</b></p>
+                <p><b>${ex.special ? "备考" : "师兄推荐复习方法"}：</b></p>
                 ${method ? `<ul>${method}</ul>` : `<p class="dense-todo">待补充</p>`}
-                ${focusEssay ? `<p><b>考试重点（高频大题 TOP3）：</b></p><ul class="dense-focus">${focusEssay}</ul>` : `<p><b>考试重点：</b><span class="dense-todo">待补充</span></p>`}
+                ${focusEssay
+                  ? `<p><b>考试重点（高频大题 TOP3）：</b></p><ul class="dense-focus">${focusEssay}</ul>`
+                  : ex.special ? "" : `<p><b>考试重点：</b><span class="dense-todo">待补充</span></p>`}
               </div>
             </details>
           </div>`;
@@ -438,7 +524,7 @@
     renderTimeline(document.getElementById("timeline"), courses, SITE.weekCount);
 
     const n = renderExamList(document.getElementById("examList"), courses);
-    document.getElementById("examCount").textContent = `共 ${n} 场（含期中/期末）`;
+    document.getElementById("examCount").textContent = `共 ${n} 场（含期中/期末/六级）`;
 
     renderExamDense();
 
