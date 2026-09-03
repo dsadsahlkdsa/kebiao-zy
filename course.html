@@ -16,12 +16,28 @@
 </header>
 
 <main>
-  <section class="panel" id="infoPanel">
+  <nav class="topnav">
+    <a href="#sec-exp">师兄经验</a>
+    <a href="#sec-info">基本信息</a>
+    <a href="#sec-note">我的笔记</a>
+    <a href="#sec-focus">考试重点</a>
+    <a href="#sec-exams">考试安排</a>
+    <a href="#sec-tl">时间轴</a>
+    <a href="#sec-method">学习方法</a>
+    <a href="#sec-files">课程资料</a>
+  </nav>
+
+  <section class="panel" id="sec-exp">
+    <h2>备考经验 <span class="hint">师兄师姐的经验帖 · 点击直达</span></h2>
+    <div id="courseExp"></div>
+  </section>
+
+  <section class="panel" id="sec-info">
     <h2>基本信息</h2>
     <div class="detail-grid" id="infoGrid"></div>
   </section>
 
-  <section class="panel" id="notePanel">
+  <section class="panel" id="sec-note">
     <h2>我的笔记 <span class="hint">仅保存在当前浏览器 · 自动保存</span></h2>
     <div class="note-wrap">
       <textarea id="courseNote" placeholder="写下这门课的笔记、复习心得、易错点……"></textarea>
@@ -36,17 +52,17 @@
     </div>
   </section>
 
-  <section class="panel" id="focusPanel">
+  <section class="panel" id="sec-focus">
     <h2>🎯 考试重点 <span class="hint">从备考资料中精炼 · 指导前期学习</span></h2>
     <div id="focusBody"></div>
   </section>
 
-  <section class="panel" id="examPanel">
+  <section class="panel" id="sec-exams">
     <h2>考试安排</h2>
     <div class="exam-list" id="courseExams"></div>
   </section>
 
-  <section class="panel" id="timelinePanel">
+  <section class="panel" id="sec-tl">
     <h2>教学时间轴</h2>
     <div class="timeline mini-tl" id="courseTimeline"></div>
     <p class="legend">
@@ -55,17 +71,12 @@
     </p>
   </section>
 
-  <section class="panel" id="expPanel">
-    <h2>备考经验</h2>
-    <div id="courseExp"></div>
-  </section>
-
-  <section class="panel" id="methodPanel">
+  <section class="panel" id="sec-method">
     <h2>师兄推荐的学习方法</h2>
     <div id="methodBody"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="sec-files">
     <h2>课程资料 <span class="hint">建设中</span></h2>
     <div class="placeholder">
       <div class="big">📝</div>
